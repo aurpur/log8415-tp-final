@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "log8415 Final Project"
+version = "0.1.0"
+description = ""
+authors = ["aurpur <ikamaaurel@gmail.com>"]
+readme = "README.md"
+packages = [
+    { include = "deploy", from = "src" },
+    { include = "templates", from = "src" },
+    { include = "standalone", from = "src" },
+    { include = "cluster", from = "src" },
+    { include = "gatekeeper", from = "src" },
+    { include = "proxy", from = "src" },
+]
+
+[tool.poetry.dependencies]
+python = "~3.12"
+boto3 = "^1.28.50"
+paramiko = "^3.3.1"
+backoff = "^2.2.1"
+jinja2 = "^3.1.2"
+
+[tool.poetry.group.dev.dependencies]
+boto3-stubs = {extras = ["essential"], version = "^1.28.50"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
