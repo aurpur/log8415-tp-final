@@ -1,0 +1,14 @@
+#!/bin/sh -xe
+
+{# Install mysql server #}
+apt update
+DEBIAN_FRONTEND=noninteractive apt install -y mysql-server
+
+{# Allow remote access from any host #}
+tee /etc/mysql/my.cnf <<'EOF'
+[mysqld]
+bind-address=0.0.0.0
+EOF
+
+{# Apply config #}
+systemctl restart mysql

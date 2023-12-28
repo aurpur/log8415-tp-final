@@ -1,0 +1,8 @@
+#!/bin/sh -xe
+
+{# Update root password and allow remote access #}
+mysql -uroot <<'EOF'
+ALTER USER 'root'@'localhost' IDENTIFIED WITH caching_sha2_password BY '{{mysql_root_password}}';
+UPDATE mysql.user SET Host='%' WHERE User='root' AND Host='localhost';
+FLUSH PRIVILEGES;
+EOF

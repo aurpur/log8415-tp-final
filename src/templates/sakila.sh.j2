@@ -1,0 +1,11 @@
+#!/bin/sh -xe
+
+{# Download the database #}
+wget https://downloads.mysql.com/docs/sakila-db.tar.gz
+tar xzf sakila-db.tar.gz
+
+{# Restore it #}
+mysql -uroot -p{{mysql_root_password}} <<'EOF'
+SOURCE sakila-db/sakila-schema.sql;
+SOURCE sakila-db/sakila-data.sql;
+EOF
