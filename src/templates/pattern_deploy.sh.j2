@@ -1,0 +1,36 @@
+#!/bin/sh -xe
+
+{# Install Deno #}
+apt update
+DEBIAN_FRONTEND=noninteractive apt install -y unzip
+curl -fsSL https://deno.land/x/install/install.sh | sh
+
+{# Copy application script #}
+tee main.ts <<'EOF'
+{{main_ts}}
+EOF
+
+{# Copy config file #}
+tee config.json <<'EOF'
+{{config_json}}
+EOF
+
+{# systemd service #}
+tee /etc/systemd/system/pattern.service <<EOF
+[Unit]
+Description=pattern
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=$PWD
+ExecStart=$HOME/.deno/bin/deno run -A main.ts
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+{# Start #}
+systemctl daemon-reload
+systemctl enable --now pattern

@@ -1,0 +1,11 @@
+#!/bin/sh -xe
+
+{# Check the download center for the latest version #}
+DEB_FILE=mysql-apt-config_0.8.29-1_all.deb
+
+wget https://dev.mysql.com/get/$DEB_FILE
+
+{# Set the package group collection (e.g. cluster-compatible packages) #}
+echo mysql-apt-config mysql-apt-config/select-server select {{server}} | debconf-set-selections
+{# Install the APT config #}
+DEBIAN_FRONTEND=noninteractive dpkg -i $DEB_FILE

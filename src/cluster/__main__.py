@@ -1,11 +1,10 @@
+import asyncio
 import logging
 
 from deploy.config import LOG_LEVEL
 
-from standalone.setup import setup
+from cluster.setup import setup
 
 if __name__ == "__main__":
     logging.basicConfig(level=LOG_LEVEL)
-    setup()
-
-
+    asyncio.run(setup())

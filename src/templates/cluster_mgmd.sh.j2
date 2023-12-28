@@ -1,0 +1,56 @@
+#!/bin/sh -xe
+
+{# Install the management server #}
+apt update
+DEBIAN_FRONTEND=noninteractive apt install -y mysql-cluster-community-management-server
+
+{# Create the management directory #}
+mkdir -p /var/lib/mysql-cluster
+
+{# Create the manager config #}
+tee /var/lib/mysql-cluster/config.ini <<'EOF'
+{# Applies to all workers #}
+[ndbd default]
+NoOfReplicas={{workers | length}}
+DataDir=/usr/local/mysql/data
+
+{# Declare the manager #}
+[ndb_mgmd]
+HostName=ip-{{manager.private_ip_address | replace(".", "-")}}.ec2.internal
+DataDir=/var/lib/mysql-cluster
+
+{# Declare the workers #}
+{% for worker in workers %}
+[ndbd]
+HostName=ip-{{worker.private_ip_address | replace(".", "-")}}.ec2.internal
+{% endfor %}
+
+{# Declare the mysqld servers (all nodes) #}
+[mysqld]
+HostName=ip-{{manager.private_ip_address | replace(".", "-")}}.ec2.internal
+{% for worker in workers %}
+[mysqld]
+HostName=ip-{{worker.private_ip_address | replace(".", "-")}}.ec2.internal
+{% endfor %}
+EOF
+
+{# systemd service #}
+tee /etc/systemd/system/ndb_mgmd.service <<'EOF'
+[Unit]
+Description=MySQL NDB Cluster Management Server
+After=network.target auditd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+{# Start #}
+systemctl daemon-reload
+systemctl enable --now ndb_mgmd

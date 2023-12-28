@@ -1,0 +1,19 @@
+#!/bin/sh -xe
+
+{# Install the cluster-compatible mysql server #}
+apt update
+DEBIAN_FRONTEND=noninteractive apt install -y mysql-cluster-community-server
+
+{# mysqld configuration: enable cluster mode + manager address #}
+tee /etc/mysql/my.cnf <<'EOF'
+[mysqld]
+ndbcluster
+default-storage-engine=ndbcluster
+bind-address=0.0.0.0
+
+[mysql_cluster]
+ndb-connectstring=ip-{{manager.private_ip_address | replace(".", "-")}}.ec2.internal
+EOF
+
+{# Apply config #}
+systemctl restart mysql

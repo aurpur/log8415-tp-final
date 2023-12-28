@@ -1,0 +1,43 @@
+#!/bin/sh -xe
+
+{# Avoid OOM when ndbd starts #}
+if [ ! -f /swapfile ]; then
+    fallocate -l 1G /swapfile
+    chmod 600 /swapfile
+    mkswap /swapfile
+    swapon /swapfile
+fi
+
+{# Install the data node daemon (ndbd) #}
+apt update
+DEBIAN_FRONTEND=noninteractive apt install -y mysql-cluster-community-data-node
+
+{# Cluster data directory #}
+mkdir -p /usr/local/mysql/data
+
+{# ndbd configuration: manager address #}
+tee /etc/my.cnf <<'EOF'
+[mysql_cluster]
+ndb-connectstring=ip-{{manager.private_ip_address | replace(".", "-")}}.ec2.internal
+EOF
+
+{# systemd service #}
+tee /etc/systemd/system/ndbd.service <<'EOF'
+[Unit]
+Description=MySQL NDB Data Node Daemon
+After=network.target auditd.service
+
+[Service]
+Type=forking
+ExecStart=/usr/sbin/ndbd
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+{# Start #}
+systemctl daemon-reload
+systemctl enable --now ndbd
