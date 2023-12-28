@@ -12,8 +12,8 @@ MYSQL_OPTS="--mysql-host=$1 --mysql-user=$2 --mysql-password=$3 --mysql-db=$4"
 
 GENERAL_OPTS='--threads=6 --events=0 --time=60'
 
-TEST_OPTS='--table-size=1000000'
-TEST_NAME=db_read_write
+TEST_OPTS='--table-size=10000000'
+TEST_NAME=oltp_read_write
 
 
 ALL_OPTS="$MYSQL_OPTS $GENERAL_OPTS $TEST_OPTS"
