@@ -23,8 +23,7 @@ poetry install
 # Deploy one of the three architectures
 poetry run python3 -m standalone
 poetry run python3 -m cluster
-poetry run python3 -m proxy
-poetry run python3 -m gatekeeper
+poetry run python3 -m security
 ```
 
 ## Benchmark

@@ -9,8 +9,7 @@ packages = [
     { include = "templates", from = "src" },
     { include = "standalone", from = "src" },
     { include = "cluster", from = "src" },
-    { include = "gatekeeper", from = "src" },
-    { include = "proxy", from = "src" },
+    { include = "security", from = "src" },
 ]
 
 [tool.poetry.dependencies]

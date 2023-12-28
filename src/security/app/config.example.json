@@ -1,0 +1,9 @@
+{
+  "proxy": "http://127.0.0.1:9000",
+  "trusted": "http://127.0.0.1:8000",
+  "manager": "1.1.1.1",
+  "workers": ["2.2.2.2", "3.3.3.3", "4.4.4.4"],
+  "username": "username",
+  "password": "password",
+  "db": "db"
+}
